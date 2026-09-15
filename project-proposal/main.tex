@@ -1,0 +1,325 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% -----------------------------------------------------
+% bvraghav-tiet-ucs503p-article.sty
+% -----------------------------------------------------
+
+\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
+  \gdef\Bvr@LabInstructor{#1}}
+\newcommand{\Bvr@LabInstructor}{Dr. Raghav %
+  B. Venkataramaiyer}
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
+\makeatother
+
+\usepackage{titling}
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
+\makeatletter
+\newcommand{\BvrSubtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip 0.5em}%
+}
+\makeatother
+
+\newcommand{\BvrHint}[1]{%
+  {\normalfont\normalsize\itshape\hfill #1}}
+
+% -----------------------------------------------------
+
+\title{SportSathi: An AI-Based Fitness Screening and Sports Talent Guidance Platform for Schools}
+
+\BvrSetLabInstructor{Dr. Raghav B. Venkataramaiyer}
+
+\BvrSubtitle{%
+  Project Proposal for UCS503P  \\
+  Submitted to: \BvrLabInstructorValue \\ \bfseries
+  Thapar Institute of Engineering and Technology%
+}
+
+\author{
+  Kiratpreet Kaur, CSED%
+  \thanks{Roll No: \texttt{1024030402}, Batch: \texttt{3C31}, %
+    Email: \texttt{kkaur1\_be24\@thapar.edu}}
+  \and
+  Prisha Goyal, CSED%
+  \thanks{Roll No: \texttt{1024030404}, Batch: \texttt{3C31}, %
+    Email: \texttt{pgoyal1\_be24\@thapar.edu}}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Higher-order goal%
+  \BvrHint{\ldots secondary framing}}
+This project aims to help schools move away from
+ad-hoc, paper-based fitness records and toward
+evidence-informed sports guidance, so that students with
+genuine athletic potential are less likely to be
+overlooked and students who are interested in sport
+receive individualised, data-backed direction rather than
+generic advice. The underlying goal of producing more
+capable, confident student-athletes is broader than any
+single school or sport; the immediate engineering
+objective is narrower: build a measurable, deployable
+fitness-screening and sport-suitability guidance platform
+that keeps a coach in control of every recommendation.
+
+\section{Time-to-value %
+\BvrHint{\ldots primary heuristic}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Meaningful increments will be delivered quickly by prototyping the core assessment-to-prediction workflow first -- a coach records a student's general fitness scores and receives a machine-learning-generated fitness-level prediction -- before layering on sport-specific tracking and progression forecasting.
+    \item Fast feedback is prioritised over perfection: the classification model will be validated in isolation on an existing student fitness dataset before integration, so that data-quality problems surface within days rather than at the end of the semester.
+    \item Success in the first iteration is defined by what can be shown and measured: a coach can record an assessment and receive an explainable, confidence-scored fitness prediction, gated behind mandatory coach approval before the student or parent ever sees it. Sport-specific recommendation logic and long-term progression tracking are planned for later iterations.
+\end{itemize}
+
+\section{Problem Statement}
+Schools conduct sports activities regularly, but student
+fitness and performance data is rarely recorded in a
+structured, comparable way. Students with genuine athletic
+potential can go unnoticed simply because no one is
+systematically comparing fitness data across the school.
+Students who are interested in sport rarely receive
+individualised guidance on which sport suits their
+physical profile or what to improve, and without repeated,
+comparable assessments, neither the student nor the coach
+can reliably tell whether training is working. Coaches
+lack a structured way to compare students across age
+groups, fitness levels, or improvement needs.
+
+This matters now because a standard, low-cost fitness-test
+battery (in the spirit of the Khelo India protocol)
+already gives schools a consistent way to measure
+students; the missing piece is a system that turns
+repeated test results into structured, coach-reviewed
+guidance rather than a one-time paper record.
+
+\section{Proposed Solution %
+\BvrHint{\ldots Software Proposition}}
+\subsection{Overview}
+SportSathi will be a web-based fitness-screening and
+sports-guidance platform built around the following
+components:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Fitness assessment module:} records a coach-entered general fitness assessment for a student, covering strength, endurance, flexibility, speed-agility, BMI, attendance, and motivation.
+    \item \textbf{ML-assisted fitness classification:} predicts a student's fitness category and a confidence score from the recorded assessment, using an explainable classification model.
+    \item \textbf{Sport suitability recommendation:} recommends 2--3 suitable sports for the student's fitness profile, with a stated, plain-language reason.
+    \item \textbf{Coach approval workflow:} holds every prediction back from students and parents until a coach explicitly approves or overrides it.
+    \item \textbf{Student and parent guidance views:} display approved results, together with historical assessments and progress charts.
+    \item \textbf{PDF report generation:} produces a downloadable summary report per student.
+\end{itemize}
+
+\subsection{Core Workflow}
+A coach will record a student's general fitness assessment
+through the web frontend. The backend validates and stores
+the assessment, then invokes the machine learning service,
+which returns a predicted fitness level, a confidence
+score, and 2--3 recommended sports with stated reasons. The
+coach reviews the prediction on the coach dashboard and
+marks it approved or overridden. Only approved results
+become visible in the student and parent views, alongside
+historical assessments and a progress comparison against
+the student's own prior results.
+
+\subsection{Deliberate Scope Narrowing: Two-Tier Design}
+Collecting every conceivable metric for every possible
+sport, for every student, from day one would make the
+system too complex for a coach to realistically operate.
+The data model is therefore split into two tiers:
+\textbf{Tier 1 -- General Athleticism} is a single universal
+fitness battery applied to every student and used to
+recommend suitable sports; this is the complete scope of
+the current semester. \textbf{Tier 2 -- Sport-Specific
+KPIs} is a small, five-to-seven-indicator set applied only
+to students funnelled into a specific sport squad, together
+with a progression model comparing them to age-group
+benchmarks; this tier is explicitly treated as future
+scope.
+
+\subsection{Operational Constraints for an Educational, School-Access Setting}
+Keep the assessment-entry and dashboard interfaces usable
+on low-to-mid range devices via responsive web design.
+Avoid dependence on advanced or research-grade modelling;
+favour explainable, inspectable models (Decision Tree,
+Random Forest) over black-box architectures, since a coach
+must be able to trust and explain a recommendation to a
+parent. Design for deployability using common web hosting
+and a managed relational database.
+
+\section{Solution Approach %
+\BvrHint{\ldots Engineering focus}}
+This is an engineering course project, so the focus is on
+correct data modelling, honest model evaluation, and
+workflow automation rather than novel machine learning
+research.
+
+\subsection{Fitness Classification %
+\BvrHint{\ldots non-research}}
+Fitness-level prediction will use standard, explainable
+models rather than research-grade architectures: a
+Decision Tree and a Random Forest classifier, evaluated
+against each other, with class-imbalance handling (class
+weighting and SMOTE oversampling) investigated given the
+expected rarity of a top-tier fitness category in real
+school data. Before any accuracy figure is trusted,
+features that could leak the target label will be
+identified and excluded from the training input. The model
+will be surfaced to the user only as decision support: a
+coach must approve or override every prediction before it
+is acted on.
+
+\subsection{Sport Recommendation %
+\BvrHint{\ldots non-research}}
+Sport suitability will be a rule-based mapping from a
+student's fitness profile to a small set of candidate
+sports, rather than a learned recommendation model, keeping
+the logic auditable and explainable to a coach or parent.
+
+\subsection{Web Architecture %
+\BvrHint{\ldots web-based solution}}
+A typical three-tier web architecture will be used:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Frontend:} React/Vite interface for Student, Coach, Admin, and Parent roles.
+    \item \textbf{Backend API:} Node.js/Express, handling authentication, role checks, validation, and orchestration of the ML service.
+    \item \textbf{Machine learning service:} a Python/scikit-learn service invoked per assessment.
+    \item \textbf{Database:} PostgreSQL, storing student profiles, assessments, coaches, recommendations, and administrative accounts in a normalised relational schema.
+\end{itemize}
+
+\subsection{CI/CD and Fast Delivery}
+Automatically build and run backend unit tests and linting
+on every change; produce a repeatable deployment artefact
+for a staging environment; and enable safe, frequent
+releases of incremental features, with the Tier 1
+assessment-to-prediction workflow first, and sport
+recommendation and reporting features after.
+
+\section{Evaluation Criteria %
+\BvrHint{\ldots measurable and attributable}}
+Success will be defined using measurable metrics tied to
+the core workflow.
+
+\subsection{Primary Evaluation Metric}
+\textbf{Classification quality on a held-out test set:}
+precision, recall, and macro-averaged F1-score per fitness
+category, with particular attention to per-class
+performance rather than overall accuracy alone.
+
+\textbf{Target:} an explainable classifier (Decision Tree
+or Random Forest) that achieves at least 80\% overall
+accuracy on a held-out split of the assessment dataset,
+evaluated after excluding any leaky/derived input features.
+
+\textbf{Attribution:} measured directly via
+\texttt{scikit-learn}'s classification report and confusion
+matrix on the trained pipeline.
+
+\subsection{Secondary Evaluation Metrics}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Workflow integrity:} a prediction must be verified inaccessible to the student/parent view until a coach-approval action is recorded.
+    \item \textbf{Role isolation:} each of the four roles (Student, Coach, Admin, Parent) must access only its intended views and data.
+    \item \textbf{Recommendation relevance:} percentage of sport recommendations a reviewing coach agrees are plausible given the student's fitness profile.
+    \item \textbf{Coach usability:} time taken by a coach to complete a full assessment entry, kept low enough to be practical for an entire class or cohort.
+\end{itemize}
+
+\subsection{Pilot Validation Plan}
+Seed the system with a synthetic or openly available
+student fitness dataset covering multiple age groups and
+fitness dimensions. Recruit a small number of pilot
+reviewers to play the Coach role, entering sample
+assessments and reviewing/approving generated
+recommendations during a short trial window. Compare the
+model's fitness-level predictions against the dataset's
+known labels, and gather simple clarity feedback on the
+coach dashboard from pilot reviewers.
+
+\section{Scalability %
+\BvrHint{\ldots with foresight}}
+\textbf{Scalable in theory:} the schema will be normalised
+around one core fact -- a student is assessed repeatedly
+over time -- so the natural unit of storage is one row per
+assessment, not one row per student, supporting growth in
+students, assessments, and concurrent usage without a
+redesign. The schema will be deliberately additive, so a
+future Tier 2 sport-specific metrics table can be
+introduced without modifying the Tier 1 tables.
+
+\textbf{Deployable in practice:} the frontend, backend, and
+machine learning service will be decoupled and
+independently deployable, and the machine learning service
+will be invoked as a stateless per-request call, avoiding a
+persistent, hard-to-scale process.
+
+\section{Technology Stack}
+A mature set of tools and services supports this project:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Frontend framework:} React / Vite.
+    \item \textbf{Web framework for REST APIs:} Node.js / Express.
+    \item \textbf{Relational database:} PostgreSQL.
+    \item \textbf{Machine learning:} Python, scikit-learn, imbalanced-learn.
+    \item \textbf{Authentication approach:} JWT, token-based.
+    \item \textbf{Data source:} a public/open student physical-education performance dataset, supplemented with synthetic records generated to Khelo India-style benchmark ranges.
+    \item \textbf{Test framework:} Pytest / Jest for backend and model-evaluation testing.
+    \item \textbf{CI runner and staging target:} GitHub Actions with a free-tier host.
+\end{itemize}
+These mature components let the team focus on data
+modelling, workflow correctness, and honest model
+evaluation rather than inventing new infrastructure.
+
+\section{Project Scope and Deliverables %
+\BvrHint{\ldots incremental delivery}}
+\subsection{Initial Deliverable (First Iteration)}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Authentication and role-based access (Student / Coach / Admin / Parent).
+    \item Tier 1 fitness assessment entry with automatic BMI and improvement-percentage calculation.
+    \item Trained and evaluated fitness-level classifier (leakage-checked, class-imbalance-aware).
+    \item Coach approval/override workflow, enforced before student or parent visibility.
+    \item CI: build, backend unit tests, and linting.
+    \item CD to a staging environment with a single pipeline job.
+\end{itemize}
+
+\subsection{Subsequent Deliverables}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Sport-suitability recommendation logic (fitness-profile-to-sport rule engine).
+    \item Student and parent dashboards with progress charts and PDF report generation.
+    \item Admin dashboard with school-wide distribution analytics.
+    \item Tier 2 sport-specific KPI tracking for squad-selected students, added one sport at a time.
+    \item A progression/forecasting model comparing a student's improvement trajectory against age-group benchmarks.
+\end{itemize}
+Full production-grade privacy/consent workflows,
+multi-school deployment, and mobile applications are
+acknowledged as part of the broader problem but are treated
+as future scope beyond this course project.
+
+\section{Risks and Mitigations}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Data leakage / inflated accuracy:} validate that no derived/summary column is included as a model input, and report per-class metrics rather than overall accuracy alone.
+    \item \textbf{Class imbalance:} a rare fitness category may be too small to predict reliably; mitigate with class weighting and SMOTE, and document honestly as a limitation.
+    \item \textbf{Coach adoption:} keep assessment entry to a single form with automatic BMI calculation, and never surface an unreviewed prediction to a student or parent.
+    \item \textbf{Data privacy / consent:} use only synthetic or openly available fitness data during development; no real student-identifying data will be collected.
+    \item \textbf{Scope creep from sport-specific tracking:} mitigated directly by the two-tier design, which confines the current semester to a single, universal fitness battery.
+    \item \textbf{Operational issues in the pilot:} exercise the staging environment early and keep CI/CD producing repeatable, one-command deployments.
+\end{itemize}
+
+\section{Summary}
+This project proposes SportSathi, a deployable,
+coach-supervised web platform that will turn a school's
+fitness assessment data into structured, explainable
+sport-suitability guidance, without ever letting a machine
+learning prediction reach a student or parent unreviewed.
+It meets the course criteria by emphasising time-to-value
+through incremental delivery, planning CI/CD to support
+frequent and safe releases, and using measurable evaluation
+criteria, especially per-class classification quality and
+workflow integrity. The project stays focused on
+engineering correctness, honest evaluation, and a
+deliberately scoped two-tier data strategy, rather than on
+research-driven modelling novelty.
+
+\end{document}

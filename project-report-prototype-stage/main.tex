@@ -1,0 +1,158 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+
+% -----------------------------------------------------
+% bvraghav-tiet-ucs503p-article.sty
+% -----------------------------------------------------
+
+\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
+  \gdef\Bvr@LabInstructor{#1}}
+\newcommand{\Bvr@LabInstructor}{Dr. Raghav %
+  B. Venkataramaiyer}
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
+\makeatother
+
+\usepackage{titling}
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
+\makeatletter
+\newcommand{\BvrSubtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip 0.5em}%
+}
+\makeatother
+
+\newcommand{\BvrHint}[1]{%
+  {\normalfont\normalsize\itshape\hfill #1}}
+
+% -----------------------------------------------------
+
+\title{SportSathi: An AI-Based Fitness Screening and Sports Talent Guidance Platform for Schools}
+
+\BvrSetLabInstructor{Dr. Raghav B. Venkataramaiyer}
+
+\BvrSubtitle{%
+  Project Report --- Prototype Stage, for UCS503P  \\
+  Submitted to: \BvrLabInstructorValue \\ \bfseries
+  Thapar Institute of Engineering and Technology%
+}
+
+\author{
+  Kiratpreet Kaur, CSED%
+  \thanks{Roll No: \texttt{1024030402}, Batch: \texttt{3C31}, %
+    Email: \texttt{kkaur1\_be24\@thapar.edu}}
+  \and
+  Prisha Goyal, CSED%
+  \thanks{Roll No: \texttt{1024030404}, Batch: \texttt{3C31}, %
+    Email: \texttt{pgoyal1\_be24\@thapar.edu}}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Purpose of this stage}
+This report captures the state of SportSathi midway
+between the initial proposal and the final report. Its
+purpose is narrower than the final report: to show that the
+riskiest technical assumption in the proposal --- that an
+explainable classifier can be trained honestly on available
+student fitness data --- has been tested, and to record what
+was learned before the remaining workflow (coach approval,
+dashboards, reporting) was built out.
+
+\section{What was prototyped}
+\begin{itemize}[leftmargin=0.7cm]
+    \item A public student physical-education performance dataset (500 records, 20 attributes) was identified and adopted as the Tier~1 training/evaluation dataset, in place of collecting real school data, consistent with the proposal's privacy constraints.
+    \item A first baseline classifier (Decision Tree) was trained and evaluated in isolation, ahead of any backend integration, exactly as the proposal's time-to-value heuristic specified.
+    \item The assessment-entry form and BMI auto-calculation were scaffolded on the frontend.
+\end{itemize}
+
+\section{Key finding: a leakage problem the proposal did not anticipate}
+The first baseline run included a derived
+\texttt{Overall\_PE\_Performance\_Score} column as a model
+input and produced a suspicious 98\% accuracy. Feature
+importance analysis showed the model relying almost
+entirely on that single derived column and on attendance,
+while every genuine physical fitness score (strength,
+endurance, flexibility, speed-agility) had zero importance
+--- a clear sign the derived column already encoded the
+answer.
+
+This was corrected by excluding all derived/summary columns
+(\texttt{Overall\_PE\_Performance\_Score},
+\texttt{Improvement\_Rate}, \texttt{Final\_Grade}) from the
+feature set. Retraining on only genuine, independently
+collected attributes produced a more credible 81--86\%
+accuracy (Decision Tree: 86\%, Random Forest: 81\%).
+
+\textbf{This finding is the main output of the prototype
+stage.} It confirms the proposal's ``validate in isolation
+before integration'' heuristic was the right call: the
+problem was caught while the model was still being tested
+on its own, before it was wired into any user-facing
+workflow.
+
+\section{Secondary finding: attendance as a strong predictor}
+Class-wise average attendance showed a clean, monotonic
+separation across performance categories (High Performer:
+94.2\%, Average: 89.8\%, Low: 84.7\%), stronger than any
+single raw physical-fitness score at separating the
+classes. This was not anticipated in the proposal and is
+carried forward as a candidate insight to validate further
+in the final stage.
+
+\section{Known limitation carried forward}
+The dataset's target classes are heavily imbalanced (245
+Low Performer, 243 Average Performer, 12 High Performer).
+Both the Decision Tree and Random Forest baselines failed
+to correctly predict any High Performer example. This is
+flagged here, before further work, as a limitation to be
+explicitly addressed (or explicitly documented as
+unresolved) in the final report, rather than discovered
+late.
+
+\section{Status against the proposal's initial deliverable list}
+\begin{center}
+\begin{tabular}{@{}p{6.5cm}p{4.5cm}@{}}
+\toprule
+Proposed initial deliverable & Status at prototype stage \\
+\midrule
+Authentication and role-based access & Not yet started \\
+Tier 1 assessment entry + BMI calc. & Frontend scaffolded \\
+Trained, evaluated classifier & Baseline complete; leakage found and corrected \\
+Coach approval/override workflow & Not yet started \\
+CI: build, tests, linting & Not yet started \\
+CD to staging & Not yet started \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Revised plan for the final stage}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Integrate the corrected classifier into the backend, behind a coach-approval gate, before adding any further dashboard features.
+    \item Apply class-imbalance handling (SMOTE, class weighting) to the classifier and report per-class metrics, not just overall accuracy, in the final evaluation.
+    \item Prioritise the coach-approval workflow and student/parent visibility gating over CI/CD if a time trade-off becomes necessary, since the approval gate is the project's core safety property.
+    \item Treat sport-suitability recommendation logic and the full relational database migration as stretch goals for the final stage, to be reported honestly as complete or incomplete rather than assumed.
+\end{itemize}
+
+\section{Summary}
+The prototype stage validated the proposal's central
+technical risk --- that an explainable, honestly-evaluated
+fitness classifier is achievable on available data --- and,
+in doing so, surfaced a data-leakage problem the proposal
+had not anticipated. Catching this early, during isolated
+model testing rather than after integration, is treated
+here as evidence that the proposal's time-to-value approach
+is working as intended. The remaining workflow components
+(coach approval, dashboards, CI/CD) are carried into the
+final stage as the primary remaining scope.
+
+\end{document}
