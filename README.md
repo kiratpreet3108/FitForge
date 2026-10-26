@@ -20,8 +20,9 @@ FitForge is a web platform that takes a student's general fitness
 assessment (strength, endurance, flexibility, speed-agility, BMI,
 attendance, motivation) and turns it into:
 
-1. An explainable, leakage-checked **fitness-level prediction**
-   (Decision Tree / Random Forest, SMOTE-balanced).
+1. A leakage-checked **fitness-level prediction** with calibrated
+   class probabilities (Decision Tree / Random Forest compared on the
+   same holdout set).
 2. **Sport-suitability guidance** — 2–3 recommended sports with a
    plain-language reason.
 
@@ -87,13 +88,20 @@ reasoning.
 
 ## What's Actually Built (Not Just Planned)
 
-- A leakage-controlled, evaluated classifier: **83% accuracy, 0.56
-  macro-F1** on a held-out test set — figures independently re-run and
-  verified.
+- A leakage-controlled, calibrated classifier: **84% accuracy, 0.565
+  macro-F1, and 0.074 expected calibration error** on a fixed stratified
+  held-out test set. The High Performer class is too small to claim
+  reliable detection, so every result remains coach-review only.
 - A documented leakage story: an early model hit a suspicious 98%
   accuracy by leaking the answer through a derived column; catching and
   fixing that is part of the project's evaluation narrative (see
   [ML Model Plan](docs/ml-model-plan.md)).
+- A white-box explanation panel: coaches can inspect the raw test values,
+  derived input-score formulas, class probabilities, and limits behind every
+  newly generated fitness result.
+- A coach-editable, four-week fitness-plan draft based on the student's
+  lowest transparent fitness scores, with assessment-to-assessment progress
+  comparison.
 - Coach assessment entry, coach approval/override workflow, and
   student/parent guidance views, working end-to-end.
 

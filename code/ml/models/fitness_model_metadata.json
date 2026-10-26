@@ -1,0 +1,344 @@
+{
+  "generated_at": "2026-10-26T18:34:09.860605+00:00",
+  "split": {
+    "method": "stratified_holdout",
+    "test_size": 0.2,
+    "random_state": 42,
+    "train_rows": 400,
+    "test_rows": 100
+  },
+  "dataset_audit": {
+    "rows": 500,
+    "duplicate_rows": 0,
+    "missing_values": {},
+    "class_distribution": {
+      "Low Performer": 245,
+      "Average Performer": 243,
+      "High Performer": 12
+    },
+    "class_percentages": {
+      "Low Performer": 0.49,
+      "Average Performer": 0.486,
+      "High Performer": 0.024
+    },
+    "dropped_leakage_or_identifier_columns": [
+      "ID",
+      "Performance",
+      "Overall_PE_Performance_Score",
+      "Improvement_Rate",
+      "Final_Grade"
+    ],
+    "feature_columns": {
+      "numeric": [
+        "Age",
+        "Strength_Score",
+        "Endurance_Score",
+        "Flexibility_Score",
+        "Speed_Agility_Score",
+        "BMI",
+        "Health_Fitness_Knowledge_Score",
+        "Skills_Score",
+        "Attendance_Rate",
+        "Hours_Physical_Activity_Per_Week"
+      ],
+      "categorical": [
+        "Gender",
+        "Grade_Level",
+        "Class_Participation_Level",
+        "Motivation_Level",
+        "Previous_Semester_PE_Grade"
+      ]
+    },
+    "known_limitations": [
+      "The source is a synthetic student PE dataset, not a coach-validated deployment dataset.",
+      "Only 12 of 500 rows are High Performer, so that class has only 2-3 holdout examples.",
+      "Reported probability is calibrated on the training partition, but it is not a clinical or talent-selection certainty."
+    ]
+  },
+  "candidate_models": {
+    "logistic_regression": {
+      "uncalibrated_holdout_metrics": {
+        "accuracy": 0.68,
+        "balanced_accuracy": 0.7823,
+        "macro_f1": 0.5868,
+        "expected_calibration_error": 0.0796,
+        "classification_report": {
+          "Average Performer": {
+            "precision": 0.7083333333333334,
+            "recall": 0.6938775510204082,
+            "f1-score": 0.7010309278350515,
+            "support": 49.0
+          },
+          "High Performer": {
+            "precision": 0.2222222222222222,
+            "recall": 1.0,
+            "f1-score": 0.36363636363636365,
+            "support": 2.0
+          },
+          "Low Performer": {
+            "precision": 0.7441860465116279,
+            "recall": 0.6530612244897959,
+            "f1-score": 0.6956521739130435,
+            "support": 49.0
+          },
+          "accuracy": 0.68,
+          "macro avg": {
+            "precision": 0.5582472006890612,
+            "recall": 0.7823129251700679,
+            "f1-score": 0.5867731551281529,
+            "support": 100.0
+          },
+          "weighted avg": {
+            "precision": 0.7161789405684754,
+            "recall": 0.68,
+            "f1-score": 0.6916474471292937,
+            "support": 100.0
+          }
+        }
+      },
+      "calibrated_holdout_metrics": {
+        "accuracy": 0.73,
+        "balanced_accuracy": 0.4966,
+        "macro_f1": 0.4913,
+        "expected_calibration_error": 0.1242,
+        "classification_report": {
+          "Average Performer": {
+            "precision": 0.6964285714285714,
+            "recall": 0.7959183673469388,
+            "f1-score": 0.7428571428571429,
+            "support": 49.0
+          },
+          "High Performer": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 2.0
+          },
+          "Low Performer": {
+            "precision": 0.7727272727272727,
+            "recall": 0.6938775510204082,
+            "f1-score": 0.7311827956989247,
+            "support": 49.0
+          },
+          "accuracy": 0.73,
+          "macro avg": {
+            "precision": 0.4897186147186147,
+            "recall": 0.49659863945578236,
+            "f1-score": 0.4913466461853559,
+            "support": 100.0
+          },
+          "weighted avg": {
+            "precision": 0.7198863636363636,
+            "recall": 0.73,
+            "f1-score": 0.722279569892473,
+            "support": 100.0
+          }
+        }
+      }
+    },
+    "decision_tree": {
+      "uncalibrated_holdout_metrics": {
+        "accuracy": 0.72,
+        "balanced_accuracy": 0.4898,
+        "macro_f1": 0.5121,
+        "expected_calibration_error": 0.1863,
+        "classification_report": {
+          "Average Performer": {
+            "precision": 0.72,
+            "recall": 0.7346938775510204,
+            "f1-score": 0.7272727272727273,
+            "support": 49.0
+          },
+          "High Performer": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 2.0
+          },
+          "Low Performer": {
+            "precision": 0.9,
+            "recall": 0.7346938775510204,
+            "f1-score": 0.8089887640449438,
+            "support": 49.0
+          },
+          "accuracy": 0.72,
+          "macro avg": {
+            "precision": 0.54,
+            "recall": 0.489795918367347,
+            "f1-score": 0.512087163772557,
+            "support": 100.0
+          },
+          "weighted avg": {
+            "precision": 0.7938,
+            "recall": 0.72,
+            "f1-score": 0.752768130745659,
+            "support": 100.0
+          }
+        }
+      },
+      "calibrated_holdout_metrics": {
+        "accuracy": 0.84,
+        "balanced_accuracy": 0.5714,
+        "macro_f1": 0.5648,
+        "expected_calibration_error": 0.0736,
+        "classification_report": {
+          "Average Performer": {
+            "precision": 0.7619047619047619,
+            "recall": 0.9795918367346939,
+            "f1-score": 0.8571428571428571,
+            "support": 49.0
+          },
+          "High Performer": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 2.0
+          },
+          "Low Performer": {
+            "precision": 0.972972972972973,
+            "recall": 0.7346938775510204,
+            "f1-score": 0.8372093023255814,
+            "support": 49.0
+          },
+          "accuracy": 0.84,
+          "macro avg": {
+            "precision": 0.5782925782925783,
+            "recall": 0.5714285714285715,
+            "f1-score": 0.5647840531561462,
+            "support": 100.0
+          },
+          "weighted avg": {
+            "precision": 0.8500900900900901,
+            "recall": 0.84,
+            "f1-score": 0.8302325581395348,
+            "support": 100.0
+          }
+        }
+      }
+    },
+    "random_forest": {
+      "uncalibrated_holdout_metrics": {
+        "accuracy": 0.84,
+        "balanced_accuracy": 0.5714,
+        "macro_f1": 0.5643,
+        "expected_calibration_error": 0.1443,
+        "classification_report": {
+          "Average Performer": {
+            "precision": 0.7538461538461538,
+            "recall": 1.0,
+            "f1-score": 0.8596491228070176,
+            "support": 49.0
+          },
+          "High Performer": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 2.0
+          },
+          "Low Performer": {
+            "precision": 1.0,
+            "recall": 0.7142857142857143,
+            "f1-score": 0.8333333333333334,
+            "support": 49.0
+          },
+          "accuracy": 0.84,
+          "macro avg": {
+            "precision": 0.5846153846153846,
+            "recall": 0.5714285714285715,
+            "f1-score": 0.564327485380117,
+            "support": 100.0
+          },
+          "weighted avg": {
+            "precision": 0.8593846153846154,
+            "recall": 0.84,
+            "f1-score": 0.829561403508772,
+            "support": 100.0
+          }
+        }
+      },
+      "calibrated_holdout_metrics": {
+        "accuracy": 0.83,
+        "balanced_accuracy": 0.5646,
+        "macro_f1": 0.5577,
+        "expected_calibration_error": 0.047,
+        "classification_report": {
+          "Average Performer": {
+            "precision": 0.75,
+            "recall": 0.9795918367346939,
+            "f1-score": 0.8495575221238938,
+            "support": 49.0
+          },
+          "High Performer": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 2.0
+          },
+          "Low Performer": {
+            "precision": 0.9722222222222222,
+            "recall": 0.7142857142857143,
+            "f1-score": 0.8235294117647058,
+            "support": 49.0
+          },
+          "accuracy": 0.83,
+          "macro avg": {
+            "precision": 0.5740740740740741,
+            "recall": 0.564625850340136,
+            "f1-score": 0.5576956446295332,
+            "support": 100.0
+          },
+          "weighted avg": {
+            "precision": 0.8438888888888889,
+            "recall": 0.83,
+            "f1-score": 0.8198125976054138,
+            "support": 100.0
+          }
+        }
+      }
+    }
+  },
+  "selected_model": {
+    "family": "decision_tree",
+    "calibration": "sigmoid calibration with 3-fold cross-validation on the training partition",
+    "holdout_metrics": {
+      "accuracy": 0.84,
+      "balanced_accuracy": 0.5714,
+      "macro_f1": 0.5648,
+      "expected_calibration_error": 0.0736,
+      "classification_report": {
+        "Average Performer": {
+          "precision": 0.7619047619047619,
+          "recall": 0.9795918367346939,
+          "f1-score": 0.8571428571428571,
+          "support": 49.0
+        },
+        "High Performer": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 2.0
+        },
+        "Low Performer": {
+          "precision": 0.972972972972973,
+          "recall": 0.7346938775510204,
+          "f1-score": 0.8372093023255814,
+          "support": 49.0
+        },
+        "accuracy": 0.84,
+        "macro avg": {
+          "precision": 0.5782925782925783,
+          "recall": 0.5714285714285715,
+          "f1-score": 0.5647840531561462,
+          "support": 100.0
+        },
+        "weighted avg": {
+          "precision": 0.8500900900900901,
+          "recall": 0.84,
+          "f1-score": 0.8302325581395348,
+          "support": 100.0
+        }
+      }
+    },
+    "confusion_matrix_file": "reports\\fitness_model_confusion_matrix.csv"
+  }
+}

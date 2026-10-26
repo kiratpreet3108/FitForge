@@ -966,10 +966,290 @@ form input[type="password"]:focus {
   margin-top: 3px;
 }
 
+.sport-rule {
+  display: block;
+  color: #4a5568;
+  font-size: 11px;
+  line-height: 1.4;
+  margin-top: 5px;
+}
+
 .sport-item b {
   color: #1769aa;
   text-align: right;
 }
+
+.white-box-badge {
+  background: #e6fffa;
+  color: #087f5b;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.explanation-summary {
+  color: #4a5568;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: -5px 0 20px;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.evidence-item {
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #f8fbff;
+  padding: 15px;
+}
+
+.evidence-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #172b4d;
+}
+
+.evidence-heading b {
+  color: #1769aa;
+}
+
+.evidence-item p,
+.evidence-item small {
+  color: #4a5568;
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.probability-section,
+.context-inputs,
+.explanation-notice {
+  border-radius: 10px;
+  margin-top: 18px;
+  padding: 16px;
+}
+
+.probability-section {
+  background: #f8fafc;
+}
+
+.probability-section h3,
+.context-inputs h3 {
+  color: #172b4d;
+  font-size: 15px;
+}
+
+.probability-section > p {
+  color: #718096;
+  font-size: 12px;
+  margin: 5px 0 12px;
+}
+
+.probability-row {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 130px 1fr 42px;
+  margin-top: 8px;
+}
+
+.probability-row span,
+.probability-row b {
+  color: #334155;
+  font-size: 12px;
+}
+
+.probability-row b {
+  text-align: right;
+}
+
+.probability-track {
+  background: #e2e8f0;
+  border-radius: 99px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.probability-track div {
+  background: #1769aa;
+  border-radius: inherit;
+  height: 100%;
+  min-width: 3px;
+}
+
+.context-inputs {
+  background: #f8fafc;
+}
+
+.context-inputs ul,
+.explanation-notice ul {
+  color: #4a5568;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 8px 0 0 18px;
+}
+
+.explanation-notice {
+  background: #fff8e8;
+  border: 1px solid #f6d78f;
+  color: #77520a;
+  font-size: 13px;
+}
+
+.explanation-notice ul {
+  color: #77520a;
+}
+
+.plan-badge {
+  background: #eef2ff;
+  border-radius: 20px;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 12px;
+}
+
+.plan-duration {
+  color: #4a5568;
+  font-size: 13px;
+  margin: -5px 0 16px;
+}
+
+.training-focus-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.training-focus {
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.training-focus > div {
+  align-items: center;
+  color: #172b4d;
+  display: flex;
+  justify-content: space-between;
+}
+
+.training-focus > div b {
+  color: #1769aa;
+}
+
+.training-focus p,
+.training-focus li,
+.training-focus small {
+  color: #4a5568;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.training-focus p {
+  margin-top: 9px;
+}
+
+.training-focus ul {
+  margin: 10px 0 10px 16px;
+}
+
+.training-focus small {
+  color: #77520a;
+  display: block;
+}
+
+.schedule-title {
+  color: #172b4d;
+  font-size: 15px;
+  margin: 22px 0 10px;
+}
+
+.weekly-schedule {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.weekly-schedule > div {
+  background: #eef6ff;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+}
+
+.weekly-schedule strong { color: #1769aa; font-size: 13px; }
+.weekly-schedule span { color: #334155; font-size: 12px; line-height: 1.45; }
+.weekly-schedule small { color: #718096; font-size: 11px; }
+
+.coach-feedback-label {
+  color: #172b4d;
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 22px 0 8px;
+}
+
+.training-plan-card textarea {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font: inherit;
+  min-height: 85px;
+  padding: 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+.plan-save-row {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.plan-save-row small {
+  color: #718096;
+  font-size: 11px;
+  line-height: 1.45;
+  max-width: 700px;
+}
+
+.progress-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 15px;
+}
+
+.progress-item {
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px;
+}
+
+.progress-item span, .progress-item small { color: #718096; font-size: 12px; }
+.progress-item strong { color: #172b4d; font-size: 18px; }
+.progress-item b { font-size: 12px; margin-top: 3px; }
+.positive { color: #087f5b; }
+.needs-review { color: #c05621; }
+.neutral { color: #4a5568; }
 
 .improvement-grid {
   display: grid;

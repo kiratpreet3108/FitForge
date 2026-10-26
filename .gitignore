@@ -470,6 +470,9 @@ TSWLatexianTemp*
 node_modules/
 npm-debug.log*
 *.local
+.npm-cache/
+.pnpm-store/
+.pip-cache/
 
 ## ML artifacts (keep small models tracked if needed, ignore large ones)
 code/ml/**/__pycache__/

@@ -62,17 +62,29 @@ the same data used to create the target label.
 **Lesson applied:** never include a summary/derived score as a model
 input. Only raw, independently-collected test values feed the model.
 
-### 2. After removing leaky columns, accuracy dropped to a more honest 81–86%
+### 2. Phase 3 retraining uses a reproducible, leakage-controlled evaluation
 
-Retraining with only genuine input features (Strength, Endurance,
-Flexibility, Speed_Agility, BMI, Attendance, Motivation, Hours of
-activity) gave:
+The Phase 3 training script uses the original 500 labelled rows only,
+drops the identifier and label-derived fields (`ID`, `Performance`,
+`Overall_PE_Performance_Score`, `Improvement_Rate`, and `Final_Grade`),
+and creates one fixed 80/20 stratified split (`random_state=42`). Numeric
+columns are median-imputed and scaled; categorical columns are
+most-frequent-imputed and one-hot encoded inside each pipeline.
 
-- Decision Tree: 86% accuracy
-- Random Forest: 81% accuracy
-- Final model (SMOTE-assisted Random Forest): **83% accuracy, macro-F1 ≈ 0.56**
+Logistic Regression, a shallow Decision Tree, and Random Forest were
+evaluated both before and after sigmoid probability calibration. The
+calibrated Decision Tree was selected by **macro-F1**, rather than overall
+accuracy, because accuracy disguises minority-class failure:
 
-This is a believable, defensible number for a student prototype.
+| Metric on the untouched 100-row holdout | Selected calibrated Decision Tree |
+|---|---:|
+| Accuracy | 84.0% |
+| Balanced accuracy | 57.1% |
+| Macro-F1 | 0.565 |
+| Expected calibration error | 0.074 |
+
+The repeatable script, JSON evaluation report, and confusion matrix live
+in `code/ml/src/train_fitness_model.py` and `code/ml/reports/`.
 
 ### 3. Attendance and motivation emerged as the strongest genuine predictors
 
@@ -92,21 +104,21 @@ as raw ability."*
 
 ### 4. Class imbalance is a known, unresolved limitation
 
-The `High Performer` category had only 12 out of 500 records. Both
-models failed to predict this class at all (0% recall), even after
-applying `class_weight='balanced'`. Balancing improved minority-class
-attempts slightly (Decision Tree) but reduced overall accuracy (71% vs.
-86%) — a real precision/recall trade-off.
+The `High Performer` category has only 12 out of 500 records (2.4%),
+which produces only two High Performer cases in the fixed holdout set.
+The selected model has **0% recall for that class** on this test. That
+means 84% accuracy must not be described as talent-identification
+accuracy. The application returns calibrated probabilities and marks each
+prediction for coach review, but it must not claim that it can reliably
+identify high-potential athletes yet.
 
 **Recommended handling for the report:** document this honestly as a
 known limitation, and consider one of:
 
-- Oversampling (SMOTE) for the minority class — already applied in the
-  final model.
 - Collapsing to two categories ("Needs Improvement" vs. "Meeting/
   Exceeding Expectations") to avoid an unreliable third class.
-- Explicitly noting that more data is needed for reliable High Performer
-  detection — a legitimate "Future Scope" item.
+- Collecting more independently assessed High Performer records before
+  enabling athlete-selection decisions.
 
 ## What This Means Going Forward
 

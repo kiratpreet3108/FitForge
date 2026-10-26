@@ -3,6 +3,8 @@ import jsPDF from "jspdf";
 
 import "./App.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 /* =========================================================
    COACH DASHBOARD
 ========================================================= */
@@ -299,6 +301,13 @@ function AssessmentPage({ onBack, onAnalyze }) {
     flexibility: "",
     attendance: "",
     coachRating: "",
+    gender: "",
+    gradeLevel: "",
+    classParticipationLevel: "",
+    motivationLevel: "",
+    previousSemesterPeGrade: "",
+    healthFitnessKnowledgeScore: "",
+    physicalActivityHours: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -325,23 +334,11 @@ function AssessmentPage({ onBack, onAnalyze }) {
     setLoading(true);
 
     try {
-      /* ---------------------------------------------
-         1. SAVE ASSESSMENT
-      --------------------------------------------- */
-
-      const assessmentResponse = await fetch(
-        "http://localhost:5000/api/assessments",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...formData,
-            bmi,
-          }),
-        },
-      );
+      const assessmentResponse = await fetch(`${API_BASE_URL}/api/assessments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
       const assessmentResult = await assessmentResponse.json();
 
@@ -355,94 +352,9 @@ function AssessmentPage({ onBack, onAnalyze }) {
 
       const savedAssessment = assessmentResult.assessment;
 
-      /* ---------------------------------------------
-         2. PREPARE ML INPUT
-         
-         The current trained model expects a different
-         feature schema than the portal form.
-
-         These are prototype transformations for the
-         academic MVP.
-      --------------------------------------------- */
-
-      const pushups = Number(formData.pushups || 0);
-      const situps = Number(formData.situps || 0);
-      const plank = Number(formData.plank || 0);
-      const sprint = Number(formData.sprint || 0);
-      const shuttle = Number(formData.shuttle || 0);
-      const flexibility = Number(formData.flexibility || 0);
-      const attendance = Number(formData.attendance || 0);
-      const coachRating = Number(formData.coachRating || 0);
-
-      const strengthScore = Math.min(
-        100,
-        Math.round(
-          ((pushups / 40) * 100 + (situps / 40) * 100 + (plank / 120) * 100) /
-            3,
-        ),
-      );
-
-      const enduranceScore = Math.max(
-        0,
-        Math.min(100, Math.round(100 - ((shuttle - 8) / 12) * 100)),
-      );
-
-      const speedAgilityScore = Math.max(
-        0,
-        Math.min(100, Math.round(100 - ((sprint - 6) / 6) * 100)),
-      );
-
-      const skillsScore = Math.min(100, Math.round((coachRating / 10) * 100));
-
-      const mlData = {
-        assessment_id: savedAssessment.id,
-
-        age: Number(formData.age),
-
-        strength_score: strengthScore,
-
-        endurance_score: enduranceScore,
-
-        flexibility_score: flexibility,
-
-        speed_agility_score: speedAgilityScore,
-
-        bmi: Number(bmi),
-
-        health_fitness_knowledge_score: 70,
-
-        skills_score: skillsScore,
-
-        attendance_rate: attendance,
-
-        hours_physical_activity_per_week: 6,
-
-        gender: "Female",
-
-        grade_level: "11th",
-
-        class_participation_level: "High",
-
-        motivation_level: "High",
-
-        previous_semester_pe_grade: "B",
-      };
-
-      console.log("ML INPUT:", mlData);
-
-      /* ---------------------------------------------
-         3. CALL REAL ML MODEL
-      --------------------------------------------- */
-
       const predictionResponse = await fetch(
-        "http://localhost:5000/api/predict",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(mlData),
-        },
+        `${API_BASE_URL}/api/assessments/${savedAssessment.id}/predict`,
+        { method: "POST" },
       );
 
       const predictionResult = await predictionResponse.json();
@@ -453,14 +365,7 @@ function AssessmentPage({ onBack, onAnalyze }) {
 
       console.log("REAL ML PREDICTION:", predictionResult);
 
-      /* ---------------------------------------------
-         4. SEND EVERYTHING TO RECOMMENDATION PAGE
-      --------------------------------------------- */
-
-      onAnalyze({
-        ...savedAssessment,
-        prediction: predictionResult.prediction,
-      });
+      onAnalyze(predictionResult.assessment);
     } catch (error) {
       console.error("ASSESSMENT / ML ERROR:", error);
 
@@ -764,6 +669,58 @@ function AssessmentPage({ onBack, onAnalyze }) {
                 required
               />
             </div>
+
+            <div className="field">
+              <label>Gender *</label>
+              <select name="gender" value={formData.gender} onChange={handleChange} required>
+                <option value="">Select gender</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Grade Level *</label>
+              <select name="gradeLevel" value={formData.gradeLevel} onChange={handleChange} required>
+                <option value="">Select grade</option>
+                {['8th', '9th', '10th', '11th', '12th'].map((grade) => <option key={grade} value={grade}>{grade}</option>)}
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Class Participation *</label>
+              <select name="classParticipationLevel" value={formData.classParticipationLevel} onChange={handleChange} required>
+                <option value="">Select level</option>
+                {['Low', 'Medium', 'High'].map((level) => <option key={level} value={level}>{level}</option>)}
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Motivation Level *</label>
+              <select name="motivationLevel" value={formData.motivationLevel} onChange={handleChange} required>
+                <option value="">Select level</option>
+                {['Low', 'Medium', 'High'].map((level) => <option key={level} value={level}>{level}</option>)}
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Previous PE Grade *</label>
+              <select name="previousSemesterPeGrade" value={formData.previousSemesterPeGrade} onChange={handleChange} required>
+                <option value="">Select grade</option>
+                {['A', 'B', 'C', 'D'].map((grade) => <option key={grade} value={grade}>{grade}</option>)}
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Health & Fitness Knowledge (0–100) *</label>
+              <input type="number" name="healthFitnessKnowledgeScore" min="0" max="100" value={formData.healthFitnessKnowledgeScore} onChange={handleChange} required />
+            </div>
+
+            <div className="field">
+              <label>Physical Activity (hours/week) *</label>
+              <input type="number" name="physicalActivityHours" min="0" max="80" step="0.5" value={formData.physicalActivityHours} onChange={handleChange} required />
+            </div>
           </div>
         </section>
 
@@ -856,25 +813,29 @@ function calculateSportRecommendations(assessment) {
       name: "Football",
       icon: "⚽",
       score: footballScore,
-      reason: "Good combination of speed, power and strength.",
+      reason: `Uses sprint (${sprint}s), broad jump (${broadJump} cm), and push-ups (${pushups}) in this prototype rule.`,
+      rule: "40 base points + jump contribution + upper-body-strength contribution + speed contribution.",
     },
     {
       name: "Athletics",
       icon: "🏃",
       score: athleticsScore,
-      reason: "Suitable for developing speed and endurance.",
+      reason: `Uses sprint (${sprint}s), shuttle run (${shuttle}s), and broad jump (${broadJump} cm) in this prototype rule.`,
+      rule: "35 base points + speed contribution + endurance contribution + jump contribution.",
     },
     {
       name: "Basketball",
       icon: "🏀",
       score: basketballScore,
-      reason: "Good potential for agility, jumping and court movement.",
+      reason: `Uses broad jump (${broadJump} cm), push-ups (${pushups}), and shuttle run (${shuttle}s) in this prototype rule.`,
+      rule: "35 base points + jump contribution + upper-body-strength contribution + agility contribution.",
     },
     {
       name: "Volleyball",
       icon: "🏐",
       score: volleyballScore,
-      reason: "Suitable for jumping, mobility and upper-body strength.",
+      reason: `Uses broad jump (${broadJump} cm), flexibility (${flexibility} cm), and push-ups (${pushups}) in this prototype rule.`,
+      rule: "35 base points + jump contribution + flexibility contribution + upper-body-strength contribution.",
     },
   ]
     .sort((a, b) => b.score - a.score)
@@ -944,6 +905,166 @@ function generateFitnessReport(assessment) {
   doc.save(`Fitness_Report_${assessment.student || "Student"}.pdf`);
 }
 
+function WhiteBoxExplanation({ explanation, prediction }) {
+  const probabilities = prediction?.class_probabilities || {};
+
+  if (!explanation) {
+    return (
+      <section className="recommendation-card explanation-card">
+        <h2>🔎 Why this result?</h2>
+        <p className="section-description">
+          This assessment was created before transparent explanations were enabled.
+          Run the assessment again to generate its evidence panel.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="recommendation-card explanation-card">
+      <div className="card-title">
+        <div>
+          <h2>🔎 Why this fitness result?</h2>
+          <p>Every displayed score comes from a visible calculation using this student&apos;s assessment.</p>
+        </div>
+        <span className="white-box-badge">White-box explanation</span>
+      </div>
+
+      <p className="explanation-summary">{explanation.resultExplanation}</p>
+
+      <div className="evidence-grid">
+        {explanation.modelInputs?.map((item) => (
+          <article className="evidence-item" key={item.name}>
+            <div className="evidence-heading">
+              <strong>{item.name}</strong>
+              <b>{item.derivedScore}/100</b>
+            </div>
+            <p><b>Recorded:</b> {item.value} {item.unit}</p>
+            <p><b>Calculation:</b> {item.formula}</p>
+            <small>{item.meaning}</small>
+          </article>
+        ))}
+      </div>
+
+      <div className="probability-section">
+        <h3>Calibrated class probabilities</h3>
+        <p>These show the model&apos;s relative certainty between fitness classes; they are not a talent rating.</p>
+        {Object.entries(probabilities).map(([label, probability]) => (
+          <div className="probability-row" key={label}>
+            <span>{label}</span>
+            <div className="probability-track">
+              <div style={{ width: `${Math.round(Number(probability) * 100)}%` }} />
+            </div>
+            <b>{Math.round(Number(probability) * 100)}%</b>
+          </div>
+        ))}
+      </div>
+
+      <div className="context-inputs">
+        <h3>Other recorded context</h3>
+        <ul>{explanation.contextualInputs?.map((item) => <li key={item}>{item}</li>)}</ul>
+      </div>
+
+      <div className="explanation-notice">
+        <strong>Important limits</strong>
+        <ul>{explanation.limitations?.map((item) => <li key={item}>{item}</li>)}</ul>
+      </div>
+    </section>
+  );
+}
+
+function ProgressComparison({ current, previous }) {
+  if (!previous) {
+    return (
+      <p className="section-description">
+        This is the first recorded assessment for this student. Complete the four-week plan, then reassess using the same tests to view progress.
+      </p>
+    );
+  }
+
+  const comparisonMetrics = [
+    { label: "Push-ups", current: current.pushups, previous: previous.pushups, unit: "", higherIsBetter: true },
+    { label: "Plank", current: current.plank, previous: previous.plank, unit: " sec", higherIsBetter: true },
+    { label: "Sprint", current: current.sprint, previous: previous.sprint, unit: " sec", higherIsBetter: false },
+    { label: "Shuttle run", current: current.shuttle, previous: previous.shuttle, unit: " sec", higherIsBetter: false },
+  ];
+
+  return (
+    <div className="progress-grid">
+      {comparisonMetrics.map((metric) => {
+        const change = Number(metric.current) - Number(metric.previous);
+        const improved = metric.higherIsBetter ? change > 0 : change < 0;
+        const unchanged = change === 0;
+        return (
+          <div className="progress-item" key={metric.label}>
+            <span>{metric.label}</span>
+            <strong>{metric.current}{metric.unit}</strong>
+            <small>Previous: {metric.previous}{metric.unit}</small>
+            <b className={unchanged ? "neutral" : improved ? "positive" : "needs-review"}>
+              {unchanged ? "No change" : `${improved ? "Improved" : "Review"}: ${Math.abs(change).toFixed(1)}${metric.unit}`}
+            </b>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function TrainingPlan({ plan, coachFeedback, onFeedbackChange, onSave, saving }) {
+  if (!plan) return null;
+
+  return (
+    <section className="recommendation-card training-plan-card">
+      <div className="card-title">
+        <div>
+          <h2>📅 Personalized four-week training plan</h2>
+          <p>{plan.frequency}</p>
+        </div>
+        <span className="plan-badge">{plan.status === "coach-reviewed" ? "Coach reviewed" : "Draft for coach"}</span>
+      </div>
+
+      <p className="plan-duration"><b>Plan duration:</b> {plan.duration}</p>
+      <div className="training-focus-grid">
+        {plan.focusAreas?.map((area) => (
+          <article className="training-focus" key={area.key}>
+            <div><strong>{area.name}</strong><b>{area.score}/100</b></div>
+            <p><b>Starting point:</b> {area.current}</p>
+            <p>{area.goal}</p>
+            <ul>{area.sessions?.map((session) => <li key={session}>{session}</li>)}</ul>
+            <small>{area.safety}</small>
+          </article>
+        ))}
+      </div>
+
+      <h3 className="schedule-title">Weekly rhythm</h3>
+      <div className="weekly-schedule">
+        {plan.weeklySchedule?.map((session) => (
+          <div key={session.day}>
+            <strong>{session.day}</strong>
+            <span>{session.activity}</span>
+            <small>{session.duration}</small>
+          </div>
+        ))}
+      </div>
+
+      <label className="coach-feedback-label" htmlFor="coach-feedback">Coach notes or adjustments</label>
+      <textarea
+        id="coach-feedback"
+        value={coachFeedback}
+        onChange={(event) => onFeedbackChange(event.target.value)}
+        maxLength={1000}
+        placeholder="For example: use incline push-ups, reduce running volume, or add a school-team drill."
+      />
+      <div className="plan-save-row">
+        <small>{plan.disclaimer}</small>
+        <button className="approve-button" onClick={onSave} disabled={saving}>
+          {saving ? "Saving..." : "Save coach plan"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function RecommendationPage({ assessment, onBack, onReviewSaved }) {
   const [decision, setDecision] = useState(
     assessment?.coachDecision === "approved"
@@ -954,15 +1075,36 @@ function RecommendationPage({ assessment, onBack, onReviewSaved }) {
   );
 
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [coachFeedback, setCoachFeedback] = useState(assessment?.trainingPlan?.coachFeedback || "");
+  const [planSaving, setPlanSaving] = useState(false);
+  const [previousAssessment, setPreviousAssessment] = useState(null);
 
   const topSports = calculateSportRecommendations(assessment);
+
+  useEffect(() => {
+    const loadPreviousAssessment = async () => {
+      if (!assessment?.student) return;
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/assessments`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Unable to load assessment history");
+        const earlier = data.assessments
+          .filter((item) => item.student === assessment.student && item.id !== assessment.id)
+          .sort((a, b) => new Date(b.assessmentDate || b.createdAt) - new Date(a.assessmentDate || a.createdAt))[0];
+        setPreviousAssessment(earlier || null);
+      } catch (error) {
+        console.error("PROGRESS HISTORY ERROR:", error);
+      }
+    };
+    loadPreviousAssessment();
+  }, [assessment?.id, assessment?.student]);
 
   const handleReview = async (selectedDecision) => {
     try {
       setReviewLoading(true);
 
       const response = await fetch(
-        `http://localhost:5000/api/assessments/${assessment.id}/review`,
+        `${API_BASE_URL}/api/assessments/${assessment.id}/review`,
         {
           method: "POST",
           headers: {
@@ -1005,6 +1147,24 @@ function RecommendationPage({ assessment, onBack, onReviewSaved }) {
 
   const handleOverride = () => {
     handleReview("override");
+  };
+
+  const handleSaveTrainingPlan = async () => {
+    try {
+      setPlanSaving(true);
+      const response = await fetch(`${API_BASE_URL}/api/assessments/${assessment.id}/training-plan/review`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coachFeedback }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Unable to save coach plan");
+      onReviewSaved?.(result.assessment);
+    } catch (error) {
+      alert(`Training plan error: ${error.message}`);
+    } finally {
+      setPlanSaving(false);
+    }
   };
 
   const predictedLevel =
@@ -1086,13 +1246,34 @@ function RecommendationPage({ assessment, onBack, onReviewSaved }) {
         </div>
       </section>
 
+      <WhiteBoxExplanation
+        explanation={assessment?.explanation}
+        prediction={assessment?.prediction}
+      />
+
+      <TrainingPlan
+        plan={assessment?.trainingPlan}
+        coachFeedback={coachFeedback}
+        onFeedbackChange={setCoachFeedback}
+        onSave={handleSaveTrainingPlan}
+        saving={planSaving}
+      />
+
+      <section className="recommendation-card">
+        <h2>📈 Progress since the previous assessment</h2>
+        <p className="section-description">
+          Comparison uses the previous record for the same student. Sprint and shuttle times improve when they decrease; other displayed test values improve when they increase.
+        </p>
+        <ProgressComparison current={assessment} previous={previousAssessment} />
+      </section>
+
       {/* SPORTS */}
 
       <section className="recommendation-card">
         <h2>Recommended Sports</h2>
 
         <p className="section-description">
-          Sports suggested using the current physical fitness profile.
+          Transparent prototype rules based on the current physical-fitness profile — not a trained sport model.
         </p>
 
         <div className="sports-list">
@@ -1104,6 +1285,7 @@ function RecommendationPage({ assessment, onBack, onReviewSaved }) {
                 <strong>{sport.name}</strong>
 
                 <p>{sport.reason}</p>
+                <small className="sport-rule">Rule: {sport.rule}</small>
               </div>
 
               <b>{sport.score}%</b>
@@ -1223,7 +1405,7 @@ function StudentDashboard({ assessment, onLogout }) {
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/assessments");
+        const response = await fetch(`${API_BASE_URL}/api/assessments`);
 
         const data = await response.json();
 
@@ -1231,7 +1413,7 @@ function StudentDashboard({ assessment, onLogout }) {
           throw new Error("Failed to load assessment history");
         }
 
-        const studentHistory = data
+        const studentHistory = data.assessments
           .filter((item) => item.student === assessment?.student)
           .sort(
             (a, b) =>
